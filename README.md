@@ -13,7 +13,8 @@ See [Setup & Rules](./docs/SETUP.md) for requirements.
 
 ```bash
 # Approach 1
-go run . # Linux and macOS: Use `sudo go run .` if you encounter any "Permission denied" errors.
+go run . (number) # Linux and macOS: Use `sudo go run . (number)` if you encounter any "Permission denied" errors.
+(number) parameter is optional (defaults to 6) and generates (number) islands for simulation
 
 # Approach 2
 go build # build step
