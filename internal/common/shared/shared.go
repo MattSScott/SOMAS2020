@@ -32,7 +32,7 @@ func init() {
 
 	var args = os.Args
 
-	if len(args) > 1 {
+	if len(args) == 2 {
 		TotalTeams, _ = strconv.Atoi(args[1])
 	} else {
 		TotalTeams = 6
