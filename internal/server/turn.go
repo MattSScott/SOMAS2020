@@ -40,16 +40,22 @@ func (s *SOMASServer) runOrgs() error {
 	s.logf("start runOrgs")
 	defer s.logf("finish runOrgs")
 
-	if err := s.runIIGO(); err != nil {
-		return errors.Errorf("IIGO error: %v", err)
+	if shared.Govt {
+		if err := s.runIIGO(); err != nil {
+			return errors.Errorf("IIGO error: %v", err)
+		}
 	}
 
-	if err := s.runIIFO(); err != nil {
-		return errors.Errorf("IIFO error: %v", err)
+	if shared.Forecast {
+		if err := s.runIIFO(); err != nil {
+			return errors.Errorf("IIFO error: %v", err)
+		}
 	}
 
-	if err := s.runIITO(); err != nil {
-		return errors.Errorf("IITO error: %v", err)
+	if shared.Trading {
+		if err := s.runIITO(); err != nil {
+			return errors.Errorf("IITO error: %v", err)
+		}
 	}
 
 	return nil

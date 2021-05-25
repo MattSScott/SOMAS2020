@@ -22,12 +22,12 @@ var (
 	)
 	initialResources = flag.Float64(
 		"initialResources",
-		50,
+		200,
 		"The default number of resources at the start of the game.",
 	)
 	initialCommonPool = flag.Float64(
 		"initialCommonPool",
-		10,
+		20,
 		"The default number of resources in the common pool at the start of the game.",
 	)
 	costOfLiving = flag.Float64(
@@ -40,19 +40,19 @@ var (
 	)
 	minimumResourceThreshold = flag.Float64(
 		"minimumResourceThreshold",
-		5,
+		150,
 		"The minimum resources required for an island to not be in Critical state.",
 	)
 	maxCriticalConsecutiveTurns = flag.Uint(
 		"maxCriticalConsecutiveTurns",
-		3,
+		5,
 		"The maximum consecutive turns an island can be in the critical state.",
 	)
 
 	// config.ForagingConfig.DeerHuntConfig
 	foragingDeerMaxPerHunt = flag.Uint(
 		"foragingMaxDeerPerHunt",
-		5,
+		10,
 		"Max possible number of deer on a single hunt (regardless of number of participants). ** should be strictly less than max deer population.",
 	)
 	foragingDeerIncrementalInputDecay = flag.Float64(
@@ -176,12 +176,12 @@ var (
 	)
 	disasterMagnitudeLambda = flag.Float64(
 		"disasterMagnitudeLambda",
-		1,
+		2,
 		"Exponential rate param for disaster magnitude",
 	)
 	disasterMagnitudeResourceMultiplier = flag.Float64(
 		"disasterMagnitudeResourceMultiplier",
-		85,
+		300,
 		"Multiplier to map disaster magnitude to CP resource deductions",
 	)
 	disasterCommonpoolThreshold = flag.Float64(
@@ -196,49 +196,49 @@ var (
 	)
 	disasterCommonpoolThresholdVisible = flag.Bool(
 		"disasterCommonpoolThresholdVisible",
-		false,
+		true,
 		"Whether disasterCommonpoolThreshold is visible to agents",
 	)
 	disasterPeriodVisible = flag.Bool(
 		"disasterPeriodVisible",
-		true,
+		false,
 		"Whether disasterPeriod is visible to agents",
 	)
 	disasterStochasticPeriodVisible = flag.Bool(
 		"disasterStochasticPeriodVisible",
-		true,
+		false,
 		"Whether stochasticPeriod is visible to agents",
 	)
 
 	// config.IIGOConfig - Executive branch
 	iigoGetRuleForSpeakerActionCost = flag.Float64(
 		"iigoGetRuleForSpeakerActionCost",
-		2,
+		0,
 		"IIGO action cost for getRuleForSpeaker action",
 	)
 	iigoBroadcastTaxationActionCost = flag.Float64(
 		"iigoBroadcastTaxationActionCost",
-		2,
+		0,
 		"IIGO action cost for broadcastTaxation action",
 	)
 	iigoReplyAllocationRequestsActionCost = flag.Float64(
 		"iigoReplyAllocationRequestsActionCost",
-		2,
+		0,
 		"IIGO action cost for replyAllocationRequests action",
 	)
 	iigoRequestAllocationRequestActionCost = flag.Float64(
 		"iigoRequestAllocationRequestActionCost",
-		2,
+		0,
 		"IIGO action cost for requestAllocationRequest action",
 	)
 	iigoRequestRuleProposalActionCost = flag.Float64(
 		"iigoRequestRuleProposalActionCost",
-		2,
+		0,
 		"IIGO action cost for requestRuleProposal action",
 	)
 	iigoAppointNextSpeakerActionCost = flag.Float64(
 		"iigoAppointNextSpeakerActionCost",
-		2,
+		0,
 		"IIGO action cost for appointNextSpeaker action",
 	)
 
@@ -306,31 +306,31 @@ var (
 	// config.IIGOConfig - Legislative branch
 	iigoSetVotingResultActionCost = flag.Float64(
 		"iigoSetVotingResultActionCost",
-		2,
+		0,
 		"IIGO action cost for setVotingResult",
 	)
 
 	iigoSetRuleToVoteActionCost = flag.Float64(
 		"iigoSetRuleToVoteActionCost",
-		2,
+		0,
 		"IIGO action cost for setRuleToVote action",
 	)
 
 	iigoAnnounceVotingResultActionCost = flag.Float64(
 		"iigoAnnounceVotingResultActionCost",
-		2,
+		0,
 		"IIGO action cost for announceVotingResult action",
 	)
 
 	iigoUpdateRulesActionCost = flag.Float64(
 		"iigoUpdateRulesActionCost",
-		2,
+		0,
 		"IIGO action cost for updateRules action",
 	)
 
 	iigoAppointNextJudgeActionCost = flag.Float64(
 		"iigoAppointNextJudgeActionCost",
-		2,
+		0,
 		"IIGO action cost for appointNextJudge action",
 	)
 
@@ -354,7 +354,7 @@ var (
 
 	startWithRulesInPlay = flag.Bool(
 		"startWithRulesInPlay",
-		true,
+		false,
 		"Pull all available rules into play at start of run",
 	)
 )

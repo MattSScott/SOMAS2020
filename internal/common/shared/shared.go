@@ -28,14 +28,36 @@ func (a SortClientByID) Less(i, j int) bool { return a[i] < a[j] }
 // TeamIDs contain sequential IDs of all teams
 var TeamIDs []ClientID
 
+// cmd line booleans activate and deactivate orgs
+var Trading bool = false
+var Forecast bool = false
+var Govt bool = false
+
 func init() {
 
 	var args = os.Args
 
-	if len(args) == 2 {
+	if len(args) == 2 || len(args) == 3 { // must have go run . -> num islands -> orgs
 		TotalTeams, _ = strconv.Atoi(args[1])
-	} else {
+	} else { // default conditions take 0 cmd line arguments
 		TotalTeams = 6
+		Trading = true
+		Govt = true
+		Forecast = true
+	}
+
+	if len(args) > 2 {
+		for _, v := range args[2] {
+			switch v {
+			case 't':
+				Trading = true
+			case 'g':
+				Govt = true
+			case 'f':
+				Forecast = true
+			default:
+			}
+		}
 	}
 
 	TeamIDs = make([]ClientID, TotalTeams)

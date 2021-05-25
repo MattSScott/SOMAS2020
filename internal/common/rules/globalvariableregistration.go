@@ -2,6 +2,8 @@ package rules
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 )
 
 // init Registers all variables defined in Static variables list
@@ -14,6 +16,19 @@ func InitialVarRegistration() map[VariableFieldName]VariableValuePair {
 		}
 	}
 	return baseCache
+}
+
+var totalTeams float64
+
+func init() {
+	var args = os.Args
+
+	if len(args) == 2 {
+		tmp, _ := strconv.Atoi(args[1])
+		totalTeams = float64(tmp)
+	} else {
+		totalTeams = float64(6)
+	}
 }
 
 // StaticVariables holds all globally defined variables
@@ -36,15 +51,15 @@ var StaticVariables = [...]VariableValuePair{
 	},
 	{
 		VariableName: NumberOfIslandsAlive,
-		Values:       []float64{6},
+		Values:       []float64{totalTeams},
 	},
 	{
 		VariableName: NumberOfBallotsCast,
-		Values:       []float64{6},
+		Values:       []float64{totalTeams},
 	},
 	{
 		VariableName: NumberOfAllocationsSent,
-		Values:       []float64{6},
+		Values:       []float64{totalTeams},
 	},
 	{
 		VariableName: IslandsAlive,
