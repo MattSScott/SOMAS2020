@@ -140,7 +140,7 @@ func (c *client) GetTaxContribution() shared.Resources {
 		return 0
 	}
 	c.Logf("[IIGO]: Paying tax: %v", contribution)
-	return shared.Resources(contribution.Values[0])
+	return shared.Resources(contribution.Values[0] / 2)
 }
 
 func (c *client) CommonPoolResourceRequest() shared.Resources {
@@ -159,7 +159,7 @@ func (c *client) CommonPoolResourceRequest() shared.Resources {
 // Gets called at the end of IIGO
 func (c *client) RequestAllocation() shared.Resources {
 	if c.emotionalState() == Desperate && c.config.desperateStealAmount != 0 {
-		allocation := c.config.desperateStealAmount
+		allocation := c.config.desperateStealAmount // this is reason for greed (and failure of squad)
 		c.Logf("Desperate for %v to stay alive.", allocation)
 		return shared.Resources(
 			math.Min(float64(allocation), float64(c.gameState().CommonPool)),
@@ -174,7 +174,7 @@ func (c *client) RequestAllocation() shared.Resources {
 	allocationPair, success := c.GetRecommendation(rules.IslandAllocation)
 	if !success {
 		c.Logf("Cannot determine allocation, trying to get all resources in CP.")
-		return c.gameState().CommonPool
+		return 0
 	}
 
 	// Unintentionally nicking from commonPool so limiting amount. GetRecommendation is too powerful.

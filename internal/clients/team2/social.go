@@ -206,6 +206,11 @@ func (c *client) updateGiftConfidence(island shared.ClientID) int {
 }
 
 func (c *client) updatePresidentTrust() {
+
+	if !shared.Govt {
+		return
+	}
+
 	currPres := c.gameState().PresidentID
 
 	// Default value for Opinion if we have no history
@@ -265,6 +270,11 @@ func (c *client) updatePresidentTrust() {
 }
 
 func (c *client) updateJudgeTrust() {
+
+	if !shared.Govt {
+		return
+	}
+
 	currJudge := c.gameState().JudgeID
 
 	numConsecTier := 0

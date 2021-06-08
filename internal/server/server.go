@@ -99,7 +99,7 @@ func createSOMASServer(
 				shared.Judge:     0,
 				shared.Speaker:   0,
 			},
-			SpeakerID:   shared.Teams["Team1"],
+			SpeakerID:   initRoles[0],
 			JudgeID:     initRoles[1],
 			PresidentID: initRoles[2],
 			CommonPool:  gameConfig.InitialCommonPool,
@@ -193,6 +193,10 @@ func getNRandClientIDsUniqueIfPossible(input []shared.ClientID, n int) ([]shared
 
 	// shuffle lst
 	rand.Shuffle(len(lst), func(i, j int) { lst[i], lst[j] = lst[j], lst[i] })
+
+	if !shared.Govt {
+		return []shared.ClientID{-1, -1, -1}, nil
+	}
 
 	return lst[:n], nil
 }

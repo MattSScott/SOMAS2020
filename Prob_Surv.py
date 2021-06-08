@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
-iter = 1
-totalIslands = 2
+iter = 30
+totalIslands = 12
 
 def handle_JSON(input, n):
     daysSurvived = len(input['GameStates'])
@@ -29,8 +29,8 @@ def plot3d(eg):
     fig.add_axes(ax)
 
     # set up positions for the bars 
-    xpos=np.arange(eg.shape[0])
-    ypos=np.arange(eg.shape[1])
+    xpos=np.arange(eg.shape[1])
+    ypos=np.arange(eg.shape[0])
 
     # set the ticks in the middle of the bars
     ax.set_xticks(xpos + dx/2)
@@ -52,23 +52,23 @@ def plot3d(eg):
     ax.bar3d(xpos,ypos,zpos,dx,dy,dz)
 
     # put the column / index labels
-    ax.w_yaxis.set_ticklabels(eg.columns)
-    ax.w_xaxis.set_ticklabels(eg.index)
+    ax.w_xaxis.set_ticklabels(eg.columns)
+    ax.w_yaxis.set_ticklabels(eg.index)
 
     # name the axes
-    ax.set_xlabel('Organisations Active')
-    ax.set_ylabel('Number of Initial Islands')
+    ax.set_ylabel('Organisations Active')
+    ax.set_xlabel('Number of Initial Islands')
     ax.set_zlabel('Survival Probability (n=%d)' % iter)
 
 def main():
 
     islandPerformances = {}
 
-    for i in range(totalIslands): # up to 15 islands
+    for i in range(totalIslands): # up to n islands
         island = {}
         for j in ["none", "t", "g", "f", "t+g", "t+f", "g+f", "t+g+f"]:
             totalScore = 0
-            for _ in range(iter): # average over 10 iterations
+            for _ in range(iter): # average over iter iterations
 
                 os.system('go run . ' + str(i+1) + " " + j)
 
@@ -77,7 +77,7 @@ def main():
                     totalScore += handle_JSON(DATA, i+1)
             
             totalScore /= iter
-            island[j] = totalScore
+            island[j] = round(totalScore,1)
         islandPerformances[i+1] = island
 
     plotter = pd.DataFrame(islandPerformances)

@@ -32,7 +32,7 @@ func DefaultClient(id shared.ClientID) baseclient.Client {
 			evadeTaxes:                     false,
 			kickstartTaxPercent:            0,
 			desperateStealAmount:           30,
-			maxOpinion:                     10,
+			maxOpinion:                     30,
 			soloDeerHuntContribution:       40,
 		},
 

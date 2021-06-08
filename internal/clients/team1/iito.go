@@ -92,6 +92,7 @@ func (c *client) GetGiftOffers(receivedRequests shared.GiftRequestDict) shared.G
 			opinion:  opinion,
 		})
 	}
+
 	sort.Sort(sortByOpinion(teamOpinionList))
 
 	for _, teamOpinion := range teamOpinionList {

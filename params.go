@@ -22,12 +22,12 @@ var (
 	)
 	initialResources = flag.Float64(
 		"initialResources",
-		200,
+		400,
 		"The default number of resources at the start of the game.",
 	)
 	initialCommonPool = flag.Float64(
 		"initialCommonPool",
-		20,
+		600,
 		"The default number of resources in the common pool at the start of the game.",
 	)
 	costOfLiving = flag.Float64(
@@ -52,7 +52,7 @@ var (
 	// config.ForagingConfig.DeerHuntConfig
 	foragingDeerMaxPerHunt = flag.Uint(
 		"foragingMaxDeerPerHunt",
-		10,
+		4,
 		"Max possible number of deer on a single hunt (regardless of number of participants). ** should be strictly less than max deer population.",
 	)
 	foragingDeerIncrementalInputDecay = flag.Float64(
@@ -109,7 +109,7 @@ var (
 	// config.ForagingConfig.FishingConfig
 	foragingFishMaxPerHunt = flag.Uint(
 		"foragingMaxFishPerHunt",
-		12,
+		10,
 		"Max possible catch (num. fish) on a single expedition (regardless of number of participants).",
 	)
 	foragingFishingIncrementalInputDecay = flag.Float64(
@@ -176,12 +176,12 @@ var (
 	)
 	disasterMagnitudeLambda = flag.Float64(
 		"disasterMagnitudeLambda",
-		2,
+		0.3,
 		"Exponential rate param for disaster magnitude",
 	)
 	disasterMagnitudeResourceMultiplier = flag.Float64(
 		"disasterMagnitudeResourceMultiplier",
-		300,
+		85,
 		"Multiplier to map disaster magnitude to CP resource deductions",
 	)
 	disasterCommonpoolThreshold = flag.Float64(
@@ -213,32 +213,32 @@ var (
 	// config.IIGOConfig - Executive branch
 	iigoGetRuleForSpeakerActionCost = flag.Float64(
 		"iigoGetRuleForSpeakerActionCost",
-		0,
+		2,
 		"IIGO action cost for getRuleForSpeaker action",
 	)
 	iigoBroadcastTaxationActionCost = flag.Float64(
 		"iigoBroadcastTaxationActionCost",
-		0,
+		2,
 		"IIGO action cost for broadcastTaxation action",
 	)
 	iigoReplyAllocationRequestsActionCost = flag.Float64(
 		"iigoReplyAllocationRequestsActionCost",
-		0,
+		2,
 		"IIGO action cost for replyAllocationRequests action",
 	)
 	iigoRequestAllocationRequestActionCost = flag.Float64(
 		"iigoRequestAllocationRequestActionCost",
-		0,
+		2,
 		"IIGO action cost for requestAllocationRequest action",
 	)
 	iigoRequestRuleProposalActionCost = flag.Float64(
 		"iigoRequestRuleProposalActionCost",
-		0,
+		2,
 		"IIGO action cost for requestRuleProposal action",
 	)
 	iigoAppointNextSpeakerActionCost = flag.Float64(
 		"iigoAppointNextSpeakerActionCost",
-		0,
+		2,
 		"IIGO action cost for appointNextSpeaker action",
 	)
 
@@ -306,31 +306,31 @@ var (
 	// config.IIGOConfig - Legislative branch
 	iigoSetVotingResultActionCost = flag.Float64(
 		"iigoSetVotingResultActionCost",
-		0,
+		2,
 		"IIGO action cost for setVotingResult",
 	)
 
 	iigoSetRuleToVoteActionCost = flag.Float64(
 		"iigoSetRuleToVoteActionCost",
-		0,
+		2,
 		"IIGO action cost for setRuleToVote action",
 	)
 
 	iigoAnnounceVotingResultActionCost = flag.Float64(
 		"iigoAnnounceVotingResultActionCost",
-		0,
+		2,
 		"IIGO action cost for announceVotingResult action",
 	)
 
 	iigoUpdateRulesActionCost = flag.Float64(
 		"iigoUpdateRulesActionCost",
-		0,
+		2,
 		"IIGO action cost for updateRules action",
 	)
 
 	iigoAppointNextJudgeActionCost = flag.Float64(
 		"iigoAppointNextJudgeActionCost",
-		0,
+		2,
 		"IIGO action cost for appointNextJudge action",
 	)
 
@@ -354,7 +354,7 @@ var (
 
 	startWithRulesInPlay = flag.Bool(
 		"startWithRulesInPlay",
-		false,
+		true,
 		"Pull all available rules into play at start of run",
 	)
 )

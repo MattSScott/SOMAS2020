@@ -53,7 +53,7 @@ func (s *SOMASServer) runForage() error {
 		}
 	}
 
-	if len(deerHunters) > 0 {
+	if len(deerHunters) > 1 {
 		errD := s.runDeerHunt(deerHunters)
 
 		if errD != nil {

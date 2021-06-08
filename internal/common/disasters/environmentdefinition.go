@@ -85,8 +85,8 @@ func (e Environment) computeUnmitigatedDisasterEffects() DisasterEffects {
 
 	epiX, epiY := e.LastDisasterReport.X, e.LastDisasterReport.Y // epicentre of the disaster (peak mag)
 	for _, island := range e.Geography.Islands {
-		effect := e.LastDisasterReport.Magnitude / math.Hypot(island.X-epiX, island.Y-epiY) // effect on island i is inverse prop. to square of distance to epicentre
-		individualEffect[island.ID] = math.Min(effect, e.LastDisasterReport.Magnitude)      // to prevent divide by zero -> inf
+		effect := e.LastDisasterReport.Magnitude / math.Sqrt(math.Hypot(island.X-epiX, island.Y-epiY)) // effect on island i is inverse prop. to square of distance to epicentre
+		individualEffect[island.ID] = math.Min(effect, e.LastDisasterReport.Magnitude)                 // to prevent divide by zero -> inf
 		totalEffect = totalEffect + individualEffect[island.ID]
 	}
 	if totalEffect == 0 {
