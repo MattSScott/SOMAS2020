@@ -65,7 +65,7 @@ export const generateColours = (allTeams: number) => {
     }
 
     for (let i = 0; i < allTeams; i++) {
-        const hue = Math.floor(360 / 12) * i
+        const hue = Math.floor(360 / allTeams) * i
         const saturation = 90 + Math.random() * 10
         const lightness = 50 + Math.random() * 10
 

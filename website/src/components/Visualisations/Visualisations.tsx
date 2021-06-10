@@ -13,6 +13,7 @@ import {
   achievementsvisualisation,
   metricsvisualisation,
   iigopaymentsvisualisation,
+  animationvisualisation,
 } from '../../consts/paths'
 import { OutputJSONType } from '../../consts/types'
 import { GitHash } from '../../consts/info'
@@ -34,6 +35,7 @@ import Roles from './Roles/Roles'
 import IIGOPayments from './IIGOPayments/IIGOPayments'
 import Achievements from './Achievements/Achievements'
 import Metrics from './Metrics/Metrics'
+import Animation from './Animation/Animation'
 import FourOhFour from '../FourOhFour/FourOhFour'
 import styles from './Visualisations.module.css'
 import logo from '../../assets/logo/logo512.png'
@@ -209,6 +211,11 @@ const Visualisations = () => {
                     path={iigopaymentsvisualisation}
                     exact
                     component={() => <IIGOPayments output={output} />}
+                  />
+                  <Route
+                    path={animationvisualisation}
+                    exact
+                    component={() => <Animation output={output} />}
                   />
                   <Route
                     path={visualisations}

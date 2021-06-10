@@ -12,6 +12,7 @@ import {
   visualisations,
   iigopaymentsvisualisation,
   metricsvisualisation,
+  animationvisualisation,
 } from '../../consts/paths'
 
 const VisualisationsNavbar = (props: { reset: () => any }) => {
@@ -49,6 +50,7 @@ const VisualisationsNavbar = (props: { reset: () => any }) => {
             {getNavLink('IIGOPayments', iigopaymentsvisualisation)}
             {getNavLink('Achievements', achievementsvisualisation)}
             {getNavLink('Metrics', metricsvisualisation)}
+            {getNavLink('Animation', animationvisualisation)}
           </Nav>
           <Nav>
             <LinkContainer exact to={visualisations} onClick={handleReset}>

@@ -11,3 +11,4 @@ export const resourcesvisualisation = `/visualisation/resources`
 export const iigopaymentsvisualisation = `/visualisation/iigopayments`
 export const achievementsvisualisation = `/visualisation/achievements`
 export const metricsvisualisation = `/visualisation/metrics`
+export const animationvisualisation = `/visualisation/animation`
