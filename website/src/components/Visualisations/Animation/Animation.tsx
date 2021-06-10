@@ -25,6 +25,7 @@ const Animations = (props: { output: OutputJSONType }) => {
     p5.text(`Day ${day}`, 100, 50)
     AnimFuncs.drawTrade(allTrades, day - 1, p5, islands)
     AnimFuncs.drawIslands(p5, islands)
+    AnimFuncs.drawIslandDeaths(props.output, day - 1, islands, p5)
     AnimFuncs.drawDisaster(props.output, day, p5)
     if (p5.frameCount % 10 === 0) {
       day++

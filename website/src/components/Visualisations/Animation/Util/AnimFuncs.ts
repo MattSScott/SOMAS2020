@@ -42,6 +42,7 @@ export const drawIslands = (p5: p5Types, islands: Island[]) => {
     islands.map((isle) => {
         p5.fill(0)
         p5.textSize(32)
+        p5.rectMode(p5.CORNER)
         p5.textAlign(p5.CENTER, p5.CENTER)
         p5.noStroke()
         p5.ellipse(isle.X, isle.Y, 150)
@@ -53,6 +54,35 @@ export const drawIslands = (p5: p5Types, islands: Island[]) => {
             32
         )
     })
+}
+
+function drawCross(x: number, y: number, p5: p5Types) {
+    p5.fill(255, 0, 0)
+    p5.rectMode(p5.CENTER)
+    p5.push()
+    p5.translate(x, y)
+    p5.rotate(p5.PI / 4)
+    p5.rect(0, 0, 100, 40)
+    p5.rotate(p5.PI / 2)
+    p5.rect(0, 0, 100, 40)
+    p5.pop()
+}
+
+export const drawIslandDeaths = (
+    data: OutputJSONType,
+    day: number,
+    locations: Island[],
+    p5: p5Types
+) => {
+    const teamStates = data.GameStates[day].ClientInfos
+    const dead = Object.entries(teamStates)
+        .filter((team: any) => team[1].LifeStatus === 'Dead')
+        .map((team) => {
+            const id: number = parseInt(team[0].substring('Team'.length), 10)
+            const posX = locations[id].X
+            const posY = locations[id].Y
+            return drawCross(posX, posY, p5)
+        })
 }
 
 export const drawDisaster = (
@@ -96,14 +126,8 @@ export const getIITOTrades = (data: OutputJSONType) => {
                                 ([fromTeam, response]) => {
                                     if (response) {
                                         transactionsForThisIsland.push({
-                                            from:
-                                                TeamName[
-                                                    fromTeam // as keyof typeof TeamName
-                                                ],
-                                            to:
-                                                TeamName[
-                                                    toTeam // as keyof typeof TeamName
-                                                ],
+                                            from: TeamName[fromTeam],
+                                            to: TeamName[toTeam],
                                             amount: response.AcceptedAmount,
                                         })
                                     }
@@ -151,50 +175,38 @@ export const getIIGOTrades = (data: OutputJSONType) => {
                     case 'AllocationMade':
                         transaction = {
                             from: TeamName.CommonPool,
-                            to:
-                                TeamName[
-                                    teamAction.ClientID // as keyof typeof TeamName
-                                ],
+                            to: TeamName[teamAction.ClientID],
                             amount: teamAction.Pairs[0].Values[0],
                         }
                         break
                     case 'SpeakerPayment':
                         transaction = {
-                            from:
-                                TeamName[
-                                    teamAction.ClientID // as keyof typeof TeamName
-                                ],
+                            from: TeamName[teamAction.ClientID],
                             to:
                                 TeamName[
                                     data.GameStates[Number(turnNumber)]
-                                        .SpeakerID // as keyof typeof TeamName
+                                        .SpeakerID
                                 ],
                             amount: teamAction.Pairs[0].Values[0],
                         }
                         break
                     case 'JudgePayment':
                         transaction = {
-                            from:
-                                TeamName[
-                                    teamAction.ClientID // as keyof typeof TeamName
-                                ],
+                            from: TeamName[teamAction.ClientID],
                             to:
                                 TeamName[
-                                    data.GameStates[Number(turnNumber)].JudgeID // as keyof typeof TeamName
+                                    data.GameStates[Number(turnNumber)].JudgeID
                                 ],
                             amount: teamAction.Pairs[0].Values[0],
                         }
                         break
                     case 'PresidentPayment':
                         transaction = {
-                            from:
-                                TeamName[
-                                    teamAction.ClientID // as keyof typeof TeamName
-                                ],
+                            from: TeamName[teamAction.ClientID],
                             to:
                                 TeamName[
                                     data.GameStates[Number(turnNumber)]
-                                        .PresidentID // as keyof typeof TeamName
+                                        .PresidentID
                                 ],
                             amount: teamAction.Pairs[0].Values[0],
                         }
@@ -202,10 +214,7 @@ export const getIIGOTrades = (data: OutputJSONType) => {
                     case 'IslandTaxContribution':
                     case 'SanctionPaid':
                         transaction = {
-                            from:
-                                TeamName[
-                                    teamAction.ClientID // as keyof typeof TeamName
-                                ],
+                            from: TeamName[teamAction.ClientID],
                             to: TeamName.CommonPool,
                             amount: teamAction.Pairs[0].Values[0],
                         }
