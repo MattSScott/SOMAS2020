@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Sketch from 'react-p5'
 import p5Types from 'p5'
+import { Button } from 'react-bootstrap'
 import { Transaction, OutputJSONType } from '../../../consts/types'
 import * as AnimFuncs from './Util/AnimFuncs'
 
 const Animations = (props: { output: OutputJSONType }) => {
+  const [running, setRunning] = useState(true)
+
   const totalTurns = props.output.GameStates.length
   let day: number
   let allTrades: Transaction[][]
@@ -19,19 +22,21 @@ const Animations = (props: { output: OutputJSONType }) => {
   }
 
   const draw = (p5: p5Types) => {
-    p5.background(255)
-    p5.textSize(60)
-    p5.fill(0)
-    p5.text(`Day ${day}`, 100, 50)
-    AnimFuncs.drawTrade(allTrades, day - 1, p5, islands)
-    AnimFuncs.drawIslands(p5, islands)
-    AnimFuncs.drawIslandDeaths(props.output, day - 1, islands, p5)
-    AnimFuncs.drawDisaster(props.output, day, p5)
-    if (p5.frameCount % 10 === 0) {
-      day++
-    }
-    if (day === totalTurns) {
-      day = 1
+    if (running) {
+      p5.background(255)
+      p5.textSize(60)
+      p5.fill(0)
+      p5.text(`Day ${day}`, 100, 50)
+      AnimFuncs.drawTrade(allTrades, day - 1, p5, islands)
+      AnimFuncs.drawIslands(props.output, day - 1, p5, islands)
+      AnimFuncs.drawIslandDeaths(props.output, day - 1, islands, p5)
+      AnimFuncs.drawDisaster(props.output, day, p5)
+      if (p5.frameCount % 10 === 0) {
+        day++
+      }
+      if (day === totalTurns) {
+        day = 1
+      }
     }
   }
 
@@ -44,6 +49,11 @@ const Animations = (props: { output: OutputJSONType }) => {
       }}
     >
       <h2>Full Animation of Game</h2>
+      <Button variant="warning" onClick={() => setRunning(!running)}>
+        <label htmlFor="multi" style={{ margin: 0 }}>
+          Pause Animation
+        </label>
+      </Button>
       <Sketch setup={setup} draw={draw} />
     </div>
   )

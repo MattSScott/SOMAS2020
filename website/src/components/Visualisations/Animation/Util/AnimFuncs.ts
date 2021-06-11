@@ -1,4 +1,3 @@
-import Sketch from 'react-p5'
 import p5Types from 'p5'
 import { Transaction, OutputJSONType } from '../../../../consts/types'
 import { numAgents, generateColours, TeamNameGen } from '../../utils'
@@ -10,6 +9,15 @@ export type Island = {
     ID: number
     X: number
     Y: number
+}
+
+export type ClientInfo = {
+    team: string
+    data: {
+        Resources: number
+        LifeStatus: string
+        CriticalConsecutiveTurnsCounter: number
+    }
 }
 
 export const getGeography = (
@@ -38,21 +46,85 @@ export const getGeography = (
     return islands
 }
 
-export const drawIslands = (p5: p5Types, islands: Island[]) => {
+export const getCritical = (data: OutputJSONType, day: number) => {
+    const teamStates = data.GameStates[day].ClientInfos
+    return Object.entries(teamStates)
+        .filter((team: any) => team[1].CriticalConsecutiveTurnsCounter > 0)
+        .map((team) => {
+            return parseInt(team[0].substring('Team'.length), 10)
+        })
+}
+
+export const getRoles = (
+    data: OutputJSONType,
+    day: number
+): { J: number; S: number; P: number } => {
+    const turnData = data.GameStates[day]
+    return {
+        J: parseInt(turnData.JudgeID.substring('Team'.length), 10),
+        S: parseInt(turnData.SpeakerID.substring('Team'.length), 10),
+        P: parseInt(turnData.PresidentID.substring('Team'.length), 10),
+    }
+}
+
+export const getCurrentResources = (data: OutputJSONType, day: number) => {
+    const turnData = data.GameStates[day]
+    const allResources = [turnData.CommonPool]
+
+    for (let i = 1; i <= Object.keys(turnData.ClientInfos).length; i++) {
+        allResources.push(turnData.ClientInfos[`Team${i}`].Resources)
+    }
+
+    return allResources.map((val) => Math.round(val))
+}
+
+export const drawIslands = (
+    data: OutputJSONType,
+    day: number,
+    p5: p5Types,
+    islands: Island[]
+) => {
+    const roles = getRoles(data, day)
+    const critical = getCritical(data, day)
+    const resources = getCurrentResources(data, day)
     islands.map((isle) => {
-        p5.fill(0)
+        if (critical.includes(isle.ID)) {
+            p5.fill(0, 0, 255)
+        } else {
+            p5.fill(0)
+        }
         p5.textSize(32)
         p5.rectMode(p5.CORNER)
         p5.textAlign(p5.CENTER, p5.CENTER)
         p5.noStroke()
         p5.ellipse(isle.X, isle.Y, 150)
         p5.fill(255)
+        p5.text(resources[isle.ID], isle.X - 5, isle.Y + 40, 20)
         return p5.text(
             isle.ID === 0 ? 'CPOR' : isle.ID,
             isle.X - 10,
             isle.Y,
             32
         )
+    })
+    Object.entries(roles).map(([role, ID]) => {
+        let xShift = 0
+
+        switch (role) {
+            case 'J':
+                xShift = -45
+                break
+            case 'S':
+                xShift = -10
+                break
+            case 'P':
+                xShift = 25
+                break
+            default:
+                break
+        }
+        p5.fill(0, 255, 0)
+        return p5.text(role, islands[ID].X + xShift, islands[ID].Y - 40, 28)
     })
 }
 
