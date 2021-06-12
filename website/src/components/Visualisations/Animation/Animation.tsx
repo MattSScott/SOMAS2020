@@ -31,6 +31,7 @@ const Animations = (props: { output: OutputJSONType }) => {
       AnimFuncs.drawIslands(props.output, day - 1, p5, islands)
       AnimFuncs.drawIslandDeaths(props.output, day - 1, islands, p5)
       AnimFuncs.drawDisaster(props.output, day, p5)
+      AnimFuncs.drawLegend(p5)
       if (p5.frameCount % 10 === 0) {
         day++
       }
@@ -49,9 +50,14 @@ const Animations = (props: { output: OutputJSONType }) => {
       }}
     >
       <h2>Full Animation of Game</h2>
-      <Button variant="warning" onClick={() => setRunning(!running)}>
+      <Button
+        variant={running ? 'danger' : 'success'}
+        onClick={() => {
+          setRunning(!running)
+        }}
+      >
         <label htmlFor="multi" style={{ margin: 0 }}>
-          Pause Animation
+          {running ? 'Stop' : 'Play'} Animation
         </label>
       </Button>
       <Sketch setup={setup} draw={draw} />

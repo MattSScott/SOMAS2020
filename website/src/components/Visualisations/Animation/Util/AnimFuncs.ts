@@ -332,3 +332,22 @@ export const drawTrade = (
         return p5.line(fX, fY, tX, tY)
     })
 }
+
+export const drawLegend = (p5: p5Types) => {
+    const r = 30
+    const xPos = p5.width * 0.85
+    const yPos = p5.height * 0.85
+    p5.textSize(20)
+    p5.fill(0)
+    p5.textAlign(p5.LEFT)
+    p5.ellipse(xPos, yPos, r)
+    p5.text('Island', xPos + r, yPos)
+    p5.fill(0, 0, 255)
+    p5.ellipse(xPos, yPos + r + 20, r)
+    p5.fill(0)
+    p5.text('Critical Island', xPos + r, yPos + r + 20)
+    p5.fill(255, 0, 0)
+    p5.ellipse(xPos, yPos + 2 * r + 40, r)
+    p5.fill(0)
+    p5.text('Disaster', xPos + r, yPos + 2 * r + 40)
+}
