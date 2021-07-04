@@ -29,14 +29,21 @@ func (d DeerHunt) TotalInput() shared.Resources {
 }
 
 // Hunt returns the utility from a deer hunt
-func (d DeerHunt) Hunt(dhConf config.DeerHuntConfig, deerPopulation uint) ForagingReport {
+func (d DeerHunt) Hunt(dhConf config.DeerHuntConfig, deerPopulation uint, totalHunters uint, strictRules bool) ForagingReport {
 	input := d.TotalInput()
 	// get max number of deer allowed for given resource input
-	nDeerFromInput := utilityTier(input, dhConf.MaxDeerPerHunt, dhConf.IncrementalInputDecay, dhConf.InputScaler)
+	var nDeerFromInput uint
+	if !strictRules {
+		nDeerFromInput = utilityTier(input, dhConf.MaxDeerPerHunt, dhConf.IncrementalInputDecay, dhConf.InputScaler)
+	} else {
+		nDeerFromInput = totalHunters / 2
+	}
 	returns := []shared.Resources{}
 
 	for i := uint(0); i < nDeerFromInput; i++ {
-		d.params.p = d.getPopulationLinkedProbability(dhConf, deerPopulation)
+		if !dhConf.DeerStaticProb {
+			d.params.p = d.getPopulationLinkedProbability(dhConf, deerPopulation)
+		}
 		utility := deerReturn(d.params) * shared.Resources(dhConf.OutputScaler) // scale raw deerReturn to be in range with other resource quantities
 		returns = append(returns, utility)
 		if utility > 0 { // a deer was caught and so should be removed from population

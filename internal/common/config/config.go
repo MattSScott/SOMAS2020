@@ -58,6 +58,8 @@ type DeerHuntConfig struct {
 	// Deer Population
 	MaxDeerPopulation     uint    // Max possible deer population.
 	DeerGrowthCoefficient float64 // Scaling parameter used in the population model. Larger coeff => deer pop. regenerates faster
+	DeerStaticProb        bool    // Toggles whether probability of catching a deer is fixed or relative to population size
+	DeerStrict2Player     bool    // Toggles whether subsequent deer can be foraged in a single deer hunt, or if 1 can be caught per 2 deer hunters
 }
 
 // FishingConfig is a subset of foraging config

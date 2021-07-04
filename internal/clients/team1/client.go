@@ -25,13 +25,13 @@ func DefaultClient(id shared.ClientID) baseclient.Client {
 		BasePresident: &baseclient.BasePresident{},
 		config: team1Config{
 			anxietyThreshold:               50,
-			randomForageTurns:              0,
+			randomForageTurns:              5,
 			flipForageScale:                0.3,
 			forageContributionCapPercent:   0.2,
 			forageContributionNoisePercent: 0.01,
 			evadeTaxes:                     false,
 			kickstartTaxPercent:            0,
-			desperateStealAmount:           30,
+			desperateStealAmount:           100,
 			maxOpinion:                     30,
 			soloDeerHuntContribution:       40,
 		},
@@ -115,8 +115,7 @@ type client struct {
 	*baseclient.BaseClient
 	*baseclient.BasePresident
 
-	forageHistory        ForageHistory
-	expectedForageReward shared.Resources
+	forageHistory ForageHistory
 
 	reportedResources map[shared.ClientID]bool
 

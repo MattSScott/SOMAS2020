@@ -36,17 +36,17 @@ func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.R
 		livingCost := c.BaseClient.ServerReadHandle.GetGameConfig().CostOfLiving
 
 		switch {
-		case resources < 2*livingCost:
+		case resources < 20*livingCost:
 			taxRate = 0
-		case resources < 10*livingCost:
+		case resources < 40*livingCost:
 			taxRate = 0.1
-		case resources < 50*livingCost || clientID == c.GetID():
+		case resources < 50*livingCost:
 			// Common pool feels empty :/
 			taxRate = 0.3
 		case resources < 100*livingCost:
 			taxRate = 0.4
 		default:
-			taxRate = 0.6
+			taxRate = 0.5
 		}
 
 		// https://bit.ly/3s7dRXt
@@ -140,7 +140,7 @@ func (c *client) GetTaxContribution() shared.Resources {
 		return 0
 	}
 	c.Logf("[IIGO]: Paying tax: %v", contribution)
-	return shared.Resources(contribution.Values[0] / 2)
+	return shared.Resources(contribution.Values[0] / 4) // this was way too high
 }
 
 func (c *client) CommonPoolResourceRequest() shared.Resources {

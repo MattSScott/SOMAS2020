@@ -99,6 +99,8 @@ func (s *SOMASServer) runDeerHunt(contributions map[shared.ClientID]shared.Resou
 
 	dhConf := s.gameConfig.ForagingConfig.DeerHuntConfig
 
+	strict2Player := dhConf.DeerStrict2Player
+
 	hunt, err := foraging.CreateDeerHunt(
 		contributions,
 		dhConf,
@@ -108,7 +110,7 @@ func (s *SOMASServer) runDeerHunt(contributions map[shared.ClientID]shared.Resou
 		return errors.Errorf("Error running deer hunt: %v", err)
 	}
 
-	huntReport := hunt.Hunt(dhConf, uint(s.gameState.DeerPopulation.Population))
+	huntReport := hunt.Hunt(dhConf, uint(s.gameState.DeerPopulation.Population), uint(len(contributions)), strict2Player)
 	huntReport.Turn = s.gameState.Turn // update report's Turn with actual turn value
 	// update foraging history
 	if s.gameState.ForagingHistory[shared.DeerForageType] == nil {

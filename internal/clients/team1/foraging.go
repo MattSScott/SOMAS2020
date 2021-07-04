@@ -230,7 +230,7 @@ func (c client) desperateForage() shared.ForageDecision {
 }
 
 func (c *client) DecideForage() (shared.ForageDecision, error) {
-	if c.forageHistorySize() < c.config.randomForageTurns {
+	if c.forageHistorySize() < c.config.randomForageTurns || (c.emotionalState() != Desperate && !shared.Forecast) { // make sure we can't flip forage without IIFO
 		c.Logf("[Forage decision]: random")
 		return c.randomForage(), nil
 	} else if c.emotionalState() == Desperate {
@@ -268,11 +268,10 @@ func (c *client) ForageUpdate(forageDecision shared.ForageDecision, revenue shar
 		)
 	} else {
 		c.Logf(
-			"[Forage result]: %v(%05.3f) | Reward: %+05.3f | Error: %.0f%%",
+			"[Forage result]: %v(%05.3f) | Reward: %+05.3f",
 			forageDecision.Type,
 			forageDecision.Contribution,
 			revenue,
-			((c.expectedForageReward-revenue)/revenue)*100,
 		)
 	}
 }
