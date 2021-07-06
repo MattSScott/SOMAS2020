@@ -1,9 +1,6 @@
 import p5Types from 'p5'
 import { Transaction, OutputJSONType } from '../../../../consts/types'
-import { numAgents, generateColours, TeamNameGen } from '../../utils'
-import processTransactionData, {
-    getIITOTransactions,
-} from '../../Transactions/Util/ProcessTransactionData'
+import { numAgents, TeamNameGen } from '../../utils'
 
 export type Island = {
     ID: number
@@ -124,7 +121,9 @@ export const drawIslands = (
                 break
         }
         p5.fill(0, 255, 0)
-        return p5.text(role, islands[ID].X + xShift, islands[ID].Y - 40, 28)
+        return Number.isNaN(ID)
+            ? null
+            : p5.text(role, islands[ID].X + xShift, islands[ID].Y - 40, 28)
     })
 }
 
@@ -305,13 +304,10 @@ export const getIIGOTrades = (data: OutputJSONType) => {
 
 export const processTrades = (data: OutputJSONType) => {
     const iito = getIITOTrades(data)
-    // console.log(links)
     const iigo = getIIGOTrades(data)
-    // console.log(ahh)
     return iito.map((trades, index) => {
         return trades.concat(iigo[index])
     })
-    // console.log(totalTrades)
 }
 
 export const drawTrade = (
