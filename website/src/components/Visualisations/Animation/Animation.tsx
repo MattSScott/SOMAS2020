@@ -12,6 +12,8 @@ const Animations = (props: { output: OutputJSONType }) => {
   let day: number
   let allTrades: Transaction[][]
   let islands: AnimFuncs.Island[]
+  let slider
+  let speed: number
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     p5.createCanvas(1000, 1000).parent(canvasParentRef)
@@ -19,13 +21,19 @@ const Animations = (props: { output: OutputJSONType }) => {
     allTrades = AnimFuncs.processTrades(props.output)
     islands = AnimFuncs.getGeography(props.output, 0, p5.width)
     day = 1
+    slider = p5.createSlider(5, 21, 5, 2)
+    slider.position(900, 200)
   }
 
   const draw = (p5: p5Types) => {
     if (running) {
+      speed = slider.value()
+      p5.frameRate(speed)
       p5.background(255)
-      p5.textSize(60)
+      p5.textSize(20)
       p5.fill(0)
+      p5.text('Change Speed', 680, 20)
+      p5.textSize(60)
       p5.text(`Day ${day}`, 100, 50)
       AnimFuncs.drawTrade(allTrades, day - 1, p5, islands)
       AnimFuncs.drawIslands(props.output, day - 1, p5, islands)

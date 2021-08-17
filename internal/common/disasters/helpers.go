@@ -33,7 +33,7 @@ func (report DisasterReport) Display() string {
 
 // DisplayReport is a string format method to viz a disaster report and its effect,
 // as well as how the disaster is been mitigated by the common pool
-func (env Environment) DisplayReport(cpResources shared.Resources, dConf config.DisasterConfig) string {
+func (env Environment) DisplayReport(cpResources shared.Resources, dConf config.DisasterConfig, eff DisasterEffects) string {
 	disasterReport := env.LastDisasterReport
 	if env.LastDisasterReport.Magnitude == 0 {
 		return "No disaster reported. No disaster effects."
@@ -41,12 +41,10 @@ func (env Environment) DisplayReport(cpResources shared.Resources, dConf config.
 	var sb strings.Builder
 	sb.WriteString(disasterReport.Display())
 
-	effects := env.ComputeDisasterEffects(cpResources, dConf)
-
 	// display absolute effects for each island
 	sb.WriteString("\n------------------------ Disaster Effects ------------------------\n")
 
-	for islandID, absEffect := range effects.Absolute {
+	for islandID, absEffect := range eff.Absolute {
 		island := env.Geography.Islands[islandID]
 		sb.WriteString(fmt.Sprintf(
 			"%v: \txy co-ords: (%.2f, %.2f), \tabsolute damage: %.2f \n",
@@ -55,8 +53,8 @@ func (env Environment) DisplayReport(cpResources shared.Resources, dConf config.
 
 	// display propotional effects relative to other islands and effects after CP mitigation
 	sb.WriteString("\n------------------------ Disaster Effects after CP Mitigation ------------------------\n")
-	for islandID, propEffect := range effects.Proportional {
-		sb.WriteString(fmt.Sprintf("%v: proportional damage: %.2f, \t damage after common pool mitigation: %.2f \n", islandID, propEffect, effects.CommonPoolMitigated[islandID]))
+	for islandID, propEffect := range eff.Proportional {
+		sb.WriteString(fmt.Sprintf("%v: proportional damage: %.2f, \t damage after common pool mitigation: %.2f \n", islandID, propEffect, eff.CommonPoolMitigated[islandID]))
 	}
 	return sb.String()
 }

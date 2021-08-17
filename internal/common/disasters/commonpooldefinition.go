@@ -18,8 +18,10 @@ func (e Environment) MitigateDisaster(cpResources shared.Resources, effects Disa
 	updatedIndividualEffects := map[shared.ClientID]shared.Magnitude{}
 	resourceImpact := GetDisasterResourceImpact(cpResources, effects, dConf)
 
+	// fmt.Println("eff:", effects.Absolute, "total", resourceImpact)
+
 	//compute remaining effect for each island
-	if resourceImpact <= cpResources { // Case when cp can fully mitigate disaster
+	if cpResources >= resourceImpact { // Case when cp can fully mitigate disaster
 		for islandID := range effects.Absolute {
 			updatedIndividualEffects[islandID] = 0 // 0 means fully mitigated
 		}
@@ -29,12 +31,17 @@ func (e Environment) MitigateDisaster(cpResources shared.Resources, effects Disa
 			updatedIndividualEffects[islandID] = float64(remainingDamage) * prop //leftover damage for each island is computed proportionally with respect to the damage on 6 islands
 		}
 	}
+	// fmt.Println("CP:", cpResources, "Impact:", resourceImpact, " = ", resourceImpact-cpResources)
+	// fmt.Println("mitigated:", updatedIndividualEffects)
 	return updatedIndividualEffects
 }
 
 // GetDisasterResourceImpact returns the total resource impact of a disaster
 func GetDisasterResourceImpact(cpResources shared.Resources, effects DisasterEffects, dConf config.DisasterConfig) shared.Resources {
 	totalEffect := 0.0
+
+	// fmt.Println("GDRI:")
+	// fmt.Println("og:", effects.Absolute, " mit:", effects.CommonPoolMitigated)
 
 	for _, effect := range effects.Absolute {
 		totalEffect = totalEffect + effect

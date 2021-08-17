@@ -34,7 +34,7 @@ type ForageHistory map[shared.ForageType][]ForageOutcome
 
 func (c client) randomForage() shared.ForageDecision {
 	// Up to 10% of our current resources
-	forageContribution := shared.Resources(0.2*rand.Float64()) * c.gameState().ClientInfo.Resources
+	forageContribution := shared.Resources(0.1*rand.Float64()) * c.gameState().ClientInfo.Resources
 	var forageType shared.ForageType
 	if rand.Float64() < 0.5 {
 		forageType = shared.DeerForageType
@@ -152,12 +152,7 @@ func (c client) flipForage() shared.ForageDecision {
 	}
 
 	if c.forageType == shared.DeerForageType && (totalContributionLastTurn == shared.Resources(0) || totalHuntersLastTurn == 0) {
-		contribution := shared.Resources(math.Min(
-			float64(shared.Resources(
-				c.config.forageContributionCapPercent)*resources,
-			),
-			float64(c.config.soloDeerHuntContribution),
-		))
+		contribution := shared.Resources(shared.Resources(c.config.forageContributionCapPercent*rand.Float64()) * resources)
 		// Big contribution
 		return shared.ForageDecision{
 			Contribution: contribution,

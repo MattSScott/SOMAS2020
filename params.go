@@ -40,7 +40,7 @@ var (
 	)
 	minimumResourceThreshold = flag.Float64(
 		"minimumResourceThreshold",
-		150,
+		200,
 		"The minimum resources required for an island to not be in Critical state.",
 	)
 	maxCriticalConsecutiveTurns = flag.Uint(
@@ -52,7 +52,7 @@ var (
 	// config.ForagingConfig.DeerHuntConfig
 	foragingDeerMaxPerHunt = flag.Uint(
 		"foragingMaxDeerPerHunt",
-		4,
+		5,
 		"Max possible number of deer on a single hunt (regardless of number of participants). ** should be strictly less than max deer population.",
 	)
 	foragingDeerStaticProb = flag.Bool(
@@ -82,7 +82,7 @@ var (
 	)
 	foragingDeerInputScaler = flag.Float64(
 		"foragingDeerInputScaler",
-		10,
+		0,
 		"scalar value that adjusts deer input resources to be in a range that is commensurate with cost of living, salaries etc.",
 	)
 	foragingDeerOutputScaler = flag.Float64(
@@ -144,7 +144,7 @@ var (
 	)
 	foragingFishingOutputScaler = flag.Float64(
 		"foragingFishingOutputScaler",
-		10,
+		18,
 		"scalar value that adjusts returns to be in a range that is commensurate with cost of living, salaries etc.",
 	)
 	foragingFishingDistributionStrategy = flag.Int(
@@ -186,17 +186,17 @@ var (
 	)
 	disasterMagnitudeLambda = flag.Float64(
 		"disasterMagnitudeLambda",
-		0.3,
-		"Exponential rate param for disaster magnitude",
+		6.5,
+		"Gaussian mean for disaster magnitude",
 	)
 	disasterMagnitudeResourceMultiplier = flag.Float64(
 		"disasterMagnitudeResourceMultiplier",
-		90,
+		85,
 		"Multiplier to map disaster magnitude to CP resource deductions",
 	)
 	disasterCommonpoolThreshold = flag.Float64(
 		"disasterCommonpoolThreshold",
-		200,
+		300,
 		"Common pool threshold value for disaster to be mitigated",
 	)
 	disasterStochasticPeriod = flag.Bool(

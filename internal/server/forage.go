@@ -36,7 +36,7 @@ func (s *SOMASServer) runForage() error {
 	for id, decision := range foragingParticipants {
 
 		if !shared.IsValidForageType(decision.Type) {
-			s.logf("%v client selected invalid forag type in foraging decision: ", decision.Type)
+			s.logf("%v client selected invalid foraging decision: ", decision.Type)
 		} else {
 			forageGroup := forageGroups[decision.Type]
 			err := s.takeResources(id, decision.Contribution, forageGroup.takeResourceReason)

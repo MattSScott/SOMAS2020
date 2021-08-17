@@ -51,6 +51,7 @@ func (c *client) MakeForageInfo() shared.ForageShareInfo {
 		ShareTo:          shareTo,
 		ResourceObtained: lastRevenue,
 		DecisionMade:     lastDecision,
+		SharedFrom:       c.GetID(),
 	}
 
 	c.Logf("Sharing forage info: %v", forageInfo)

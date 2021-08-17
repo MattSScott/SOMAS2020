@@ -4,18 +4,31 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
+from argparse import ArgumentParser
+import json
 
-iter = 30
+iter = 10
 totalIslands = 12
+allSurv = True
+
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    return False
 
 def handle_JSON(input, n):
     daysSurvived = len(input['GameStates'])
-    remainingIslands = len(input['GameStates'][daysSurvived-1]['RulesInfo']['VariableMap']['IslandsAlive']['Values'])
+    clientInfos = input['GameStates'][daysSurvived-1]['ClientInfos']
+    # print(json.dumps(clientInfos, indent=4, separators=(". ", " = ")))
+    remainingIslandsFilter = filter(lambda x: x["LifeStatus"] != "Dead", clientInfos.values())
+    remainingIslands = len(list(remainingIslandsFilter))
     if daysSurvived < 51:
         return 0
     else:
         if remainingIslands < n:
-            return 0
+            if allSurv:
+                return 0
+            return 1
         else:
             return 1
 
@@ -67,6 +80,7 @@ def main():
     for i in range(totalIslands): # up to n islands
         island = {}
         for j in ["none", "t", "g", "f", "t+g", "t+f", "g+f", "t+g+f"]:
+
             totalScore = 0
             for _ in range(iter): # average over iter iterations
 
@@ -86,7 +100,12 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument("-i", "--iterations", default=10, type=int, help="set total ITERATIONS for simulation (default 10)", metavar="ITERATIONS")
+    parser.add_argument("-n", "--numIslands", default=12, type=int, help="set total number of ISLANDS for simulation (default 12)", metavar="ISLANDS")
+    parser.add_argument("-a", "--allSurvive", default=True, type=str2bool, help="if true, all islands must survive for a successful simulation (default true)")
+    args = parser.parse_args()
+    iter = args.iterations
+    totalIslands = args.numIslands
+    allSurv = args.allSurvive
     main()
-
-
-# all params = {1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0, 5: 1.0, 6: 1.0, 7: 1.0, 8: 1.0, 9: 1.0, 10: 1.0, 11: 0.9, 12: 0.6, 13: 0.4, 14: 0.2, 15: 0.0}

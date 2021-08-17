@@ -112,7 +112,7 @@ func TestDisasterEffects(t *testing.T) {
 		t.Error("Expected (descending) order of CP-mitigated effects to be Team3, Team2, Team1")
 	}
 
-	t.Log(env.DisplayReport(cpResources, disasterConf)) // in case of an error
+	t.Log(env.DisplayReport(cpResources, disasterConf, effects)) // in case of an error
 }
 
 // check if effect for every island is zero

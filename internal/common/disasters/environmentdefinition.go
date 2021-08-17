@@ -54,7 +54,8 @@ func (e Environment) SampleForDisaster(dConf config.DisasterConfig, turn uint) E
 	pdfX := distuv.Uniform{Min: e.Geography.XMin, Max: e.Geography.XMax}
 	pdfY := distuv.Uniform{Min: e.Geography.YMin, Max: e.Geography.YMax}
 
-	pdfMag := distuv.Exponential{Rate: dConf.MagnitudeLambda} // Rate = lambda
+	// pdfMag := distuv.Exponential{Rate: dConf.MagnitudeLambda} // Rate = lambda
+	pdfMag := distuv.Normal{Mu: dConf.MagnitudeLambda, Sigma: 1}
 
 	dR := DisasterReport{Magnitude: 0, X: -1, Y: -1} // default: no disaster. Zero magnitude with arb co-ords
 
@@ -84,9 +85,12 @@ func (e Environment) computeUnmitigatedDisasterEffects() DisasterEffects {
 	totalEffect := 0.0
 
 	epiX, epiY := e.LastDisasterReport.X, e.LastDisasterReport.Y // epicentre of the disaster (peak mag)
+	// epiX, epiY := 9.0, 5.0 // debug for mag
+
 	for _, island := range e.Geography.Islands {
-		effect := e.LastDisasterReport.Magnitude / math.Sqrt(math.Hypot(island.X-epiX, island.Y-epiY)) // effect on island i is inverse prop. to square of distance to epicentre
-		individualEffect[island.ID] = math.Min(effect, e.LastDisasterReport.Magnitude)                 // to prevent divide by zero -> inf
+		effect := e.LastDisasterReport.Magnitude / math.Hypot(island.X-epiX, island.Y-epiY) // effect on island i is inverse prop. to square of distance to epicentre
+		// fmt.Println(e.LastDisasterReport.Magnitude, island, effect)
+		individualEffect[island.ID] = math.Min(effect, e.LastDisasterReport.Magnitude) // to prevent divide by zero -> inf
 		totalEffect = totalEffect + individualEffect[island.ID]
 	}
 	if totalEffect == 0 {
@@ -95,7 +99,7 @@ func (e Environment) computeUnmitigatedDisasterEffects() DisasterEffects {
 		}
 	} else {
 		for _, island := range e.Geography.Islands {
-			proportionalEffect[island.ID] = individualEffect[island.ID] / totalEffect
+			proportionalEffect[island.ID] = individualEffect[island.ID] / totalEffect // 0.1 -> 0.4?
 		}
 	}
 	return DisasterEffects{Absolute: individualEffect, Proportional: proportionalEffect} // ommit CP mitigated effect here - not relevant

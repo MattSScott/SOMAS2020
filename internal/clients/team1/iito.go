@@ -56,14 +56,14 @@ func (c *client) GetGiftRequests() shared.GiftRequestDict {
 		for clientID, status := range c.gameState().ClientLifeStatuses {
 			if status != shared.Dead && clientID != c.GetID() {
 				// TODO: Probably best to request a portion of Living Cost + Tax?
-				requests[clientID] = shared.GiftRequest(10 * c.gameConfig().CostOfLiving)
+				requests[clientID] = shared.GiftRequest(3 * c.gameConfig().CostOfLiving)
 			}
 		}
 	} else {
 		for clientID, status := range c.gameState().ClientLifeStatuses {
 			friendship := shared.Resources(c.teamOpinions[clientID])
 			friendshipMultiplier := (friendship + c.gameConfig().CostOfLiving) * 2.0 //maps from 2*c -> 60+2*c a fair request to jump-start gift economy
-			randomGiftReq := distuv.Bernoulli{P: 0.6}.Rand()
+			randomGiftReq := distuv.Bernoulli{P: 0.4}.Rand()
 			if status != shared.Dead && clientID != c.GetID() {
 				requests[clientID] = shared.GiftRequest(friendshipMultiplier * shared.Resources(randomGiftReq))
 			}

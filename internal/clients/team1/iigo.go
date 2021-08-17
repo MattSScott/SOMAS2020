@@ -19,6 +19,9 @@ func (c *client) GetClientPresidentPointer() roles.President {
 
 func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.ResourcesReport) shared.PresidentReturnContent {
 	taxAmountMap := make(map[shared.ClientID]shared.Resources)
+	dConf := c.BaseClient.ServerReadHandle.GetGameConfig().DisasterConfig
+	commonPoolData := dConf.CommonpoolThreshold
+	gameState := c.BaseClient.ServerReadHandle.GetGameState()
 
 	for clientID, clientReport := range islandsResources {
 		c.reportedResources[clientID] = clientReport.Reported
@@ -35,18 +38,38 @@ func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.R
 		resources := clientReport.ReportedAmount
 		livingCost := c.BaseClient.ServerReadHandle.GetGameConfig().CostOfLiving
 
-		switch {
-		case resources < 20*livingCost:
-			taxRate = 0
-		case resources < 40*livingCost:
-			taxRate = 0.1
-		case resources < 50*livingCost:
-			// Common pool feels empty :/
-			taxRate = 0.3
-		case resources < 100*livingCost:
-			taxRate = 0.4
-		default:
-			taxRate = 0.5
+		if commonPoolData.Valid {
+			totalAgents := shared.TotalTeams
+			currentCP := gameState.CommonPool
+			cpThreshold := commonPoolData.Value * 1.5
+			totalContrib := cpThreshold - currentCP
+
+			// fmt.Println(totalAgents, currentCP, cpThreshold, totalContrib)
+
+			if totalContrib > 0 {
+				needed := totalContrib / shared.Resources(totalAgents) // split contribution evenly among us (with extra 50% to fill over threshold)
+				reportedAmount := clientReport.ReportedAmount
+				taxRate = float64(needed / reportedAmount)
+				taxRate = math.Min(taxRate, float64(reportedAmount))
+			} else if resources < 20*livingCost {
+				taxRate = 0
+			} else {
+				taxRate = 0.01 // doesn't hurt to be safe :)
+			}
+		} else {
+			switch {
+			case resources < 20*livingCost:
+				taxRate = 0
+			case resources < 40*livingCost:
+				taxRate = 0.1
+			case resources < 50*livingCost:
+				// Common pool feels empty :/
+				taxRate = 0.3
+			case resources < 100*livingCost:
+				taxRate = 0.4
+			default:
+				taxRate = 0.5
+			}
 		}
 
 		// https://bit.ly/3s7dRXt
@@ -140,13 +163,13 @@ func (c *client) GetTaxContribution() shared.Resources {
 		return 0
 	}
 	c.Logf("[IIGO]: Paying tax: %v", contribution)
-	return shared.Resources(contribution.Values[0] / 4) // this was way too high
+	return shared.Resources(contribution.Values[0])
 }
 
 func (c *client) CommonPoolResourceRequest() shared.Resources {
 	switch c.emotionalState() {
 	case Normal:
-		return shared.Resources(2 * float64(c.gameConfig().CostOfLiving))
+		return shared.Resources(0 * float64(c.gameConfig().CostOfLiving))
 	case Desperate, Anxious:
 		amount := shared.Resources(c.config.resourceRequestScale) * c.gameConfig().CostOfLiving
 		c.Logf("Common pool request: %v", amount)

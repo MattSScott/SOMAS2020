@@ -395,7 +395,9 @@ const turnsAsRoleMetricCollection = (
     const totalAgents = numAgents(data)
     const metrics = emptyMetrics(totalAgents)
     data.GameStates.forEach((gameState) => {
-        metrics[gameState[role]]++
+        if (gameState[role] !== "UNKNOWN ClientID '-1'") {
+            metrics[gameState[role]]++
+        }
     })
     return metrics
 }

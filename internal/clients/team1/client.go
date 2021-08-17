@@ -34,6 +34,7 @@ func DefaultClient(id shared.ClientID) baseclient.Client {
 			desperateStealAmount:           100,
 			maxOpinion:                     30,
 			soloDeerHuntContribution:       40,
+			resourceRequestScale:           5,
 		},
 
 		forageHistory:     ForageHistory{},
@@ -124,7 +125,7 @@ type client struct {
 	receivedOffer map[shared.ClientID]shared.Resources
 
 	// allocation is the president's response to your last common pool resource request
-	allocation shared.Resources
+	// allocation shared.Resources
 
 	// Disaster
 	disasterInfo             disaster

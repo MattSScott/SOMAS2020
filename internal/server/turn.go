@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/SOMAS2020/SOMAS2020/internal/common/disasters"
 	"github.com/SOMAS2020/SOMAS2020/internal/common/shared"
 	"github.com/pkg/errors"
 )
@@ -99,8 +100,8 @@ func (s *SOMASServer) endOfTurn() error {
 	disasterHappened := updatedEnv.LastDisasterReport.Magnitude > 0
 
 	if disasterHappened {
-		s.applyDisasterEffects()    // compute effects taking into account CP and deduct resources accordingly
-		s.notifyClientsOfDisaster() // sends disaster report and effects to all non-dead clients
+		effects := s.applyDisasterEffects() // compute effects taking into account CP and deduct resources accordingly
+		s.notifyClientsOfDisaster(effects)  // sends disaster report and effects to all non-dead clients
 	}
 	s.incrementTurnAndSeason(disasterHappened)
 
@@ -119,21 +120,22 @@ func (s *SOMASServer) endOfTurn() error {
 func (s *SOMASServer) incrementTurnAndSeason(disasterHappened bool) {
 	s.logf("start incrementTurnAndSeason")
 	defer s.logf("finish incrementTurnAndSeason")
-
+	// fmt.Println("day:", s.gameState.Turn+1)
 	s.gameState.Turn++
 	if disasterHappened {
 		s.gameState.Season++
 	}
 }
 
-func (s *SOMASServer) notifyClientsOfDisaster() {
+func (s *SOMASServer) notifyClientsOfDisaster(effects disasters.DisasterEffects) {
 	s.logf("start notifying clients of disaster")
 	defer s.logf("finish notifying clients of disaster")
+
+	// effects := s.gameState.Environment.ComputeDisasterEffects(s.gameState.CommonPool, s.gameConfig.DisasterConfig) // gets effects of most recent disaster
 
 	nonDeadClients := getNonDeadClientIDs(s.gameState.ClientInfos)
 	for _, id := range nonDeadClients {
 		c := s.clientMap[id]
-		effects := s.gameState.Environment.ComputeDisasterEffects(s.gameState.CommonPool, s.gameConfig.DisasterConfig) // gets effects of most recent disaster
 		c.DisasterNotification(s.gameState.Environment.LastDisasterReport, effects)
 	}
 }
