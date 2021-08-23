@@ -39,7 +39,7 @@ func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.R
 		livingCost := c.BaseClient.ServerReadHandle.GetGameConfig().CostOfLiving
 
 		if commonPoolData.Valid {
-			totalAgents := shared.TotalTeams
+			totalAgents := len(c.aliveClients())
 			currentCP := gameState.CommonPool
 			cpThreshold := commonPoolData.Value * 1.5
 			totalContrib := cpThreshold - currentCP
@@ -57,18 +57,33 @@ func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.R
 				taxRate = 0.01 // doesn't hurt to be safe :)
 			}
 		} else {
-			switch {
-			case resources < 20*livingCost:
-				taxRate = 0
-			case resources < 40*livingCost:
-				taxRate = 0.1
-			case resources < 50*livingCost:
-				// Common pool feels empty :/
-				taxRate = 0.3
-			case resources < 100*livingCost:
-				taxRate = 0.4
-			default:
-				taxRate = 0.5
+			if shared.Forecast && len(c.aliveClients()) > 0 { // the IIFO can influence the IIGO's taxation through a set of estimates
+				bigPrediction := c.AverageDisasterReports()
+				totalAgents := len(c.aliveClients())
+				// timeLeft := bigPrediction.TimeLeft // not 100% on what to do with this
+				cpGuess := bigPrediction.CPThreshold
+				currentCP := gameState.CommonPool
+				totalContrib := shared.Resources(cpGuess) - currentCP
+				if totalContrib > 0 {
+					needed := totalContrib / shared.Resources(totalAgents) // split contribution evenly among us (with extra 50% to fill over threshold)
+					reportedAmount := clientReport.ReportedAmount
+					taxRate = float64(needed / reportedAmount)
+					taxRate = math.Min(taxRate, float64(reportedAmount))
+				}
+			} else { // we don't have any advice from the IIFO, just contribute arbitrarily
+				switch {
+				case resources < 20*livingCost:
+					taxRate = 0
+				case resources < 40*livingCost:
+					taxRate = 0.1
+				case resources < 50*livingCost:
+					// Common pool feels empty :/
+					taxRate = 0.3
+				case resources < 100*livingCost:
+					taxRate = 0.4
+				default:
+					taxRate = 0.5
+				}
 			}
 		}
 

@@ -15,6 +15,7 @@ type disaster struct {
 	numberOfDisasters   uint
 	meanDisasterTurn    float64
 	estimatedDDay       uint
+	commonPoolEstimate  float64
 }
 
 /**************************/
@@ -125,8 +126,16 @@ func (c *client) DisasterNotification(disaster disasters.DisasterReport, effect 
 			c.disasterInfo.meanDisaster = disaster
 			c.disasterInfo.numberOfDisasters++
 			c.disasterInfo.meanDisasterTurn = float64(c.gameState().Turn)
+			c.disasterInfo.commonPoolEstimate = rand.Float64() * 1000
 		} else {
 			numOfDisasters := c.disasterInfo.numberOfDisasters
+			recentDamage := effect.CommonPoolMitigated[c.GetID()]
+			if recentDamage > 200 || c.disasterInfo.commonPoolEstimate < 100 { // don't go negative!
+				c.disasterInfo.commonPoolEstimate += rand.Float64()*50 + 50
+			} else {
+				c.disasterInfo.commonPoolEstimate -= rand.Float64()*50 + 50
+			}
+
 			denominator := float64(c.disasterInfo.numberOfDisasters + 1)
 			c.disasterInfo.meanDisaster.X = (c.disasterInfo.meanDisaster.X*float64(numOfDisasters) + disaster.X) / denominator
 			c.disasterInfo.meanDisaster.Y = (c.disasterInfo.meanDisaster.Y*float64(numOfDisasters) + disaster.Y) / denominator
@@ -150,6 +159,35 @@ func (c *client) DisasterNotification(disaster disasters.DisasterReport, effect 
 	}
 }
 
+func (c *client) AverageDisasterReports() shared.DisasterPrediction { //used for informing IIGO tax
+	predictions := c.othersDisasterPrediction
+	predDataAcc := shared.DisasterPrediction{
+		CoordinateX: 0.0,
+		CoordinateY: 0.0,
+		Magnitude:   0,
+		TimeLeft:    0,
+		Confidence:  0,
+		CPThreshold: 0.0,
+	}
+	for _, predictionInfo := range predictions { // average cpthreshold + time left over the array of predictions
+		prediction := predictionInfo.PredictionMade
+		predDataAcc.CoordinateX += prediction.CoordinateX
+		predDataAcc.CoordinateY += prediction.CoordinateY
+		predDataAcc.Magnitude += prediction.Magnitude
+		predDataAcc.TimeLeft += prediction.TimeLeft
+		predDataAcc.Confidence += prediction.Confidence
+		predDataAcc.CPThreshold += prediction.CPThreshold
+	}
+	return shared.DisasterPrediction{
+		CoordinateX: predDataAcc.CoordinateX / float64(len(c.aliveClients())),
+		CoordinateY: predDataAcc.CoordinateY / float64(len(c.aliveClients())),
+		Magnitude:   predDataAcc.Magnitude / float64(len(c.aliveClients())),
+		TimeLeft:    predDataAcc.TimeLeft / uint(len(c.aliveClients())),
+		Confidence:  predDataAcc.Confidence / float64(len(c.aliveClients())),
+		CPThreshold: predDataAcc.CPThreshold / float64(len(c.aliveClients())),
+	}
+}
+
 // MakeDisasterPrediction evaluates the mean of X, Y, Magnitude, Turn
 func (c *client) MakeDisasterPrediction() shared.DisasterPredictionInfo {
 	c.disasterInfo.disasterTurnCounter++
@@ -167,6 +205,7 @@ func (c *client) MakeDisasterPrediction() shared.DisasterPredictionInfo {
 			Magnitude:   rand.Float64(),
 			Confidence:  confidence,
 			TimeLeft:    timeLeft,
+			CPThreshold: c.disasterInfo.commonPoolEstimate,
 		}
 		return shared.DisasterPredictionInfo{
 			PredictionMade: disasterPrediction,
@@ -184,7 +223,8 @@ func (c *client) MakeDisasterPrediction() shared.DisasterPredictionInfo {
 		Magnitude:   c.disasterInfo.meanDisaster.Magnitude,
 		TimeLeft:    timeLeft,
 		// TODO: Add timeLeft to confidence level
-		Confidence: confidence,
+		Confidence:  confidence,
+		CPThreshold: c.disasterInfo.commonPoolEstimate,
 	}
 
 	// Store own disasterPrediction for evaluation in DisasterNotification

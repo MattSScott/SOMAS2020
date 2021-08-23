@@ -8,6 +8,7 @@ type DisasterPrediction struct {
 	Magnitude   Magnitude
 	TimeLeft    uint
 	Confidence  PredictionConfidence
+	CPThreshold float64
 }
 
 // PredictionConfidence is bounded between 0 and 100
