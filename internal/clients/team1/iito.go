@@ -163,6 +163,8 @@ func (c *client) ReceivedGift(received shared.Resources, from shared.ClientID) {
 	if received > shared.Resources(c.receivedOffer[from]) {
 		// We love them cause they gave more than they promised.
 		c.teamOpinions[from] += c.config.maxOpinion / 5
+	} else if received > 0 && c.emotionalState() == Desperate {
+		c.teamOpinions[from] += c.config.maxOpinion / 2
 	} else if received > 0 {
 		c.teamOpinions[from]++
 	} else if received <= 0 {

@@ -206,7 +206,7 @@ var (
 	)
 	disasterCommonpoolThresholdVisible = flag.Bool(
 		"disasterCommonpoolThresholdVisible",
-		false,
+		true,
 		"Whether disasterCommonpoolThreshold is visible to agents",
 	)
 	disasterPeriodVisible = flag.Bool(

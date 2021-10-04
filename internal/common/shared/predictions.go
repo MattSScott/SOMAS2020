@@ -9,6 +9,7 @@ type DisasterPrediction struct {
 	TimeLeft    uint
 	Confidence  PredictionConfidence
 	CPThreshold float64
+	Period      uint
 }
 
 // PredictionConfidence is bounded between 0 and 100

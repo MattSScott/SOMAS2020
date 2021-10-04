@@ -168,6 +168,7 @@ func (c *client) AverageDisasterReports() shared.DisasterPrediction { //used for
 		TimeLeft:    0,
 		Confidence:  0,
 		CPThreshold: 0.0,
+		Period:      0,
 	}
 	for _, predictionInfo := range predictions { // average cpthreshold + time left over the array of predictions
 		prediction := predictionInfo.PredictionMade
@@ -177,6 +178,7 @@ func (c *client) AverageDisasterReports() shared.DisasterPrediction { //used for
 		predDataAcc.TimeLeft += prediction.TimeLeft
 		predDataAcc.Confidence += prediction.Confidence
 		predDataAcc.CPThreshold += prediction.CPThreshold
+		predDataAcc.Period += prediction.Period
 	}
 	return shared.DisasterPrediction{
 		CoordinateX: predDataAcc.CoordinateX / float64(len(c.aliveClients())),
@@ -185,6 +187,7 @@ func (c *client) AverageDisasterReports() shared.DisasterPrediction { //used for
 		TimeLeft:    predDataAcc.TimeLeft / uint(len(c.aliveClients())),
 		Confidence:  predDataAcc.Confidence / float64(len(c.aliveClients())),
 		CPThreshold: predDataAcc.CPThreshold / float64(len(c.aliveClients())),
+		Period:      predDataAcc.Period / uint(len(c.aliveClients())),
 	}
 }
 
@@ -206,6 +209,7 @@ func (c *client) MakeDisasterPrediction() shared.DisasterPredictionInfo {
 			Confidence:  confidence,
 			TimeLeft:    timeLeft,
 			CPThreshold: c.disasterInfo.commonPoolEstimate,
+			Period:      uint(c.disasterInfo.meanDisasterTurn),
 		}
 		return shared.DisasterPredictionInfo{
 			PredictionMade: disasterPrediction,
@@ -225,6 +229,7 @@ func (c *client) MakeDisasterPrediction() shared.DisasterPredictionInfo {
 		// TODO: Add timeLeft to confidence level
 		Confidence:  confidence,
 		CPThreshold: c.disasterInfo.commonPoolEstimate,
+		Period:      uint(c.disasterInfo.meanDisasterTurn),
 	}
 
 	// Store own disasterPrediction for evaluation in DisasterNotification

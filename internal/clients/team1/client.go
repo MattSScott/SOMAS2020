@@ -24,7 +24,7 @@ func DefaultClient(id shared.ClientID) baseclient.Client {
 		BaseClient:    baseclient.NewClient(id),
 		BasePresident: &baseclient.BasePresident{},
 		config: team1Config{
-			anxietyThreshold:               50,
+			anxietyThreshold:               250,
 			randomForageTurns:              5,
 			flipForageScale:                0.3,
 			forageContributionCapPercent:   0.2,

@@ -2,6 +2,7 @@ package team1
 
 import (
 	"math"
+	"math/rand"
 	"sort"
 
 	"github.com/SOMAS2020/SOMAS2020/internal/common/roles"
@@ -21,6 +22,7 @@ func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.R
 	taxAmountMap := make(map[shared.ClientID]shared.Resources)
 	dConf := c.BaseClient.ServerReadHandle.GetGameConfig().DisasterConfig
 	commonPoolData := dConf.CommonpoolThreshold
+	periodData := dConf.DisasterPeriod
 	gameState := c.BaseClient.ServerReadHandle.GetGameState()
 
 	for clientID, clientReport := range islandsResources {
@@ -37,54 +39,46 @@ func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.R
 		taxRate := 0.0 // Percentage of their resources the client will be taxed
 		resources := clientReport.ReportedAmount
 		livingCost := c.BaseClient.ServerReadHandle.GetGameConfig().CostOfLiving
+		totalAgents := len(c.aliveClients())
+		currentCP := gameState.CommonPool
+		overfillRate := 2.0
+		var timeGuess uint
+		var cpThreshold float64
 
 		if commonPoolData.Valid {
-			totalAgents := len(c.aliveClients())
-			currentCP := gameState.CommonPool
-			cpThreshold := commonPoolData.Value * 1.5
-			totalContrib := cpThreshold - currentCP
-
-			// fmt.Println(totalAgents, currentCP, cpThreshold, totalContrib)
-
-			if totalContrib > 0 {
-				needed := totalContrib / shared.Resources(totalAgents) // split contribution evenly among us (with extra 50% to fill over threshold)
-				reportedAmount := clientReport.ReportedAmount
-				taxRate = float64(needed / reportedAmount)
-				taxRate = math.Min(taxRate, float64(reportedAmount))
-			} else if resources < 20*livingCost {
-				taxRate = 0
-			} else {
-				taxRate = 0.01 // doesn't hurt to be safe :)
-			}
+			cpThreshold = float64(commonPoolData.Value) * overfillRate
 		} else {
-			if shared.Forecast && len(c.aliveClients()) > 0 { // the IIFO can influence the IIGO's taxation through a set of estimates
-				bigPrediction := c.AverageDisasterReports()
-				totalAgents := len(c.aliveClients())
-				// timeLeft := bigPrediction.TimeLeft // not 100% on what to do with this
-				cpGuess := bigPrediction.CPThreshold
-				currentCP := gameState.CommonPool
-				totalContrib := shared.Resources(cpGuess) - currentCP
-				if totalContrib > 0 {
-					needed := totalContrib / shared.Resources(totalAgents) // split contribution evenly among us (with extra 50% to fill over threshold)
-					reportedAmount := clientReport.ReportedAmount
-					taxRate = float64(needed / reportedAmount)
-					taxRate = math.Min(taxRate, float64(reportedAmount))
-				}
-			} else { // we don't have any advice from the IIFO, just contribute arbitrarily
-				switch {
-				case resources < 20*livingCost:
-					taxRate = 0
-				case resources < 40*livingCost:
-					taxRate = 0.1
-				case resources < 50*livingCost:
-					// Common pool feels empty :/
-					taxRate = 0.3
-				case resources < 100*livingCost:
-					taxRate = 0.4
-				default:
-					taxRate = 0.5
-				}
+			if shared.Forecast && len(c.aliveClients()) > 0 {
+				forecast := c.AverageDisasterReports()
+				cpThreshold = forecast.CPThreshold * overfillRate
+			} else {
+				cpThreshold = rand.Float64() * 1000 // random cpThreshold of 0 -> 1000
 			}
+		}
+
+		if periodData.Valid {
+			timeGuess = periodData.Value - 1
+		} else {
+			if shared.Forecast && len(c.aliveClients()) > 0 {
+				forecast := c.AverageDisasterReports()
+				timeGuess = forecast.Period - 1
+			} else {
+				timeGuess = uint(1.0 + rand.Float64()*9) // random period of 1 -> 10
+			}
+		}
+
+		totalContrib := shared.Resources(cpThreshold) - currentCP
+
+		if totalContrib > 0 && resources >= 20*livingCost {
+			needed := totalContrib / (shared.Resources(totalAgents) * shared.Resources(timeGuess)) // split contribution evenly among us (with extra 50% to fill over threshold)
+			// needed := totalContrib / (shared.Resources(totalAgents)) // split contribution evenly among us (with extra 50% to fill over threshold)
+			reportedAmount := clientReport.ReportedAmount
+			taxRate = float64(needed / reportedAmount)
+			taxRate = math.Min(taxRate, float64(reportedAmount))
+		} else if resources < 20*livingCost {
+			taxRate = 0
+		} else {
+			taxRate = 0.01 // doesn't hurt to be safe :)
 		}
 
 		// https://bit.ly/3s7dRXt
