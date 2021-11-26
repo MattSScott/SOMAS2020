@@ -9,7 +9,7 @@ import (
 // optionally implemented by individual islands.
 type President interface {
 	PaySpeaker() shared.PresidentReturnContent
-	SetTaxationAmount(map[shared.ClientID]shared.ResourcesReport) shared.PresidentReturnContent
+	SetTaxationAmount(map[shared.ClientID]shared.ResourcesReport, float64, uint) shared.PresidentReturnContent
 	EvaluateAllocationRequests(map[shared.ClientID]shared.Resources, shared.Resources) shared.PresidentReturnContent
 	PickRuleToVote([]rules.RuleMatrix) shared.PresidentReturnContent
 	CallSpeakerElection(monitoring shared.MonitorResult, turnsInPower int, allIslands []shared.ClientID) shared.ElectionSettings

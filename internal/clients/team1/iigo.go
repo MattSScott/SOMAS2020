@@ -2,7 +2,6 @@ package team1
 
 import (
 	"math"
-	"math/rand"
 	"sort"
 
 	"github.com/SOMAS2020/SOMAS2020/internal/common/roles"
@@ -18,7 +17,7 @@ func (c *client) GetClientPresidentPointer() roles.President {
 /*    Presidency      */
 /**********************/
 
-func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.ResourcesReport) shared.PresidentReturnContent {
+func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.ResourcesReport, presidentCPGuess float64, presidentTGuess uint) shared.PresidentReturnContent {
 	taxAmountMap := make(map[shared.ClientID]shared.Resources)
 	dConf := c.BaseClient.ServerReadHandle.GetGameConfig().DisasterConfig
 	commonPoolData := dConf.CommonpoolThreshold
@@ -52,7 +51,8 @@ func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.R
 				forecast := c.AverageDisasterReports()
 				cpThreshold = forecast.CPThreshold * overfillRate
 			} else {
-				cpThreshold = rand.Float64() * 1000 // random cpThreshold of 0 -> 1000
+				// cpThreshold = rand.Float64() * 1000 // random cpThreshold of 0 -> 1000
+				cpThreshold = presidentCPGuess
 			}
 		}
 
@@ -63,11 +63,16 @@ func (c *client) SetTaxationAmount(islandsResources map[shared.ClientID]shared.R
 				forecast := c.AverageDisasterReports()
 				timeGuess = forecast.Period - 1
 			} else {
-				timeGuess = uint(1.0 + rand.Float64()*9) // random period of 1 -> 10
+				// timeGuess = uint(1.0 + rand.Float64()*9) // random period of 1 -> 10
+				timeGuess = presidentTGuess - 1
 			}
 		}
 
+		// fmt.Println(cpThreshold, timeGuess)
+
 		totalContrib := shared.Resources(cpThreshold) - currentCP
+
+		// fmt.Println(totalContrib)
 
 		if totalContrib > 0 && resources >= 20*livingCost {
 			needed := totalContrib / (shared.Resources(totalAgents) * shared.Resources(timeGuess)) // split contribution evenly among us (with extra 50% to fill over threshold)

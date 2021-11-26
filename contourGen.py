@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from argparse import ArgumentParser
+from tqdm import tqdm
+import time
 import json
 
 iter = 10
@@ -77,7 +79,7 @@ def main():
 
     islandPerformances = {}
 
-    for i in range(totalIslands): # up to n islands
+    for i in tqdm(range(totalIslands)): # up to n islands
         island = {}
         for j in ["none", "t", "g", "f", "t+g", "t+f", "g+f", "t+g+f"]:
 

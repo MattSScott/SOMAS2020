@@ -75,6 +75,12 @@ type GameState struct {
 	// IITO Transactions
 	IITOTransactions map[shared.ClientID]shared.GiftResponseDict
 
+	// President's CP Guess Each Season
+	IIGOPresidentCPGuess float64
+
+	// President's T Guess Each Season
+	IIGOPresidentTGuess uint
+
 	// Orchestration
 	SpeakerID   shared.ClientID
 	JudgeID     shared.ClientID

@@ -14,10 +14,10 @@ import (
 func (s *SOMASServer) runIIGO() error {
 	s.logf("start runIIGO")
 	defer s.logf("finish runIIGO")
-
+	disasterJustHappened := s.gameState.Environment.LastDisasterReport.Magnitude > 0
 	nonDead := getNonDeadClientIDs(s.gameState.ClientInfos)
 	updateAliveIslands(nonDead, s.gameState)
-	iigoSuccessful, iigoStatus := iigointernal.RunIIGO(s.logf, &s.gameState, &s.clientMap, &s.gameConfig)
+	iigoSuccessful, iigoStatus := iigointernal.RunIIGO(s.logf, &s.gameState, &s.clientMap, &s.gameConfig, disasterJustHappened)
 	if !iigoSuccessful {
 		s.logf(iigoStatus)
 	}

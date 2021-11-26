@@ -58,7 +58,7 @@ func (p *BasePresident) PickRuleToVote(rulesProposals []rules.RuleMatrix) shared
 
 // SetTaxationAmount sets taxation amount for all of the living islands
 // islandsResources: map of all the living islands and their reported resources
-func (p *BasePresident) SetTaxationAmount(islandsResources map[shared.ClientID]shared.ResourcesReport) shared.PresidentReturnContent {
+func (p *BasePresident) SetTaxationAmount(islandsResources map[shared.ClientID]shared.ResourcesReport, presidentCPGuess float64, presidentTGuess uint) shared.PresidentReturnContent {
 	taxAmountMap := make(map[shared.ClientID]shared.Resources)
 
 	for clientID, clientReport := range islandsResources {

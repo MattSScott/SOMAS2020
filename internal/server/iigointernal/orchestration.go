@@ -10,7 +10,7 @@ import (
 )
 
 // RunIIGO runs all iigo function in sequence
-func RunIIGO(logger shared.Logger, g *gamestate.GameState, clientMap *map[shared.ClientID]baseclient.Client, gameConf *config.Config) (IIGOSuccessful bool, StatusDescription string) {
+func RunIIGO(logger shared.Logger, g *gamestate.GameState, clientMap *map[shared.ClientID]baseclient.Client, gameConf *config.Config, disasterJustHappened bool) (IIGOSuccessful bool, StatusDescription string) {
 
 	iIGOClients := *clientMap
 
@@ -155,7 +155,7 @@ func RunIIGO(logger shared.Logger, g *gamestate.GameState, clientMap *map[shared
 	}
 
 	// Throw error if any of the actions returns error
-	insufficientBudget := executiveBranch.broadcastTaxation(resourceReports, aliveClientIds)
+	insufficientBudget := executiveBranch.broadcastTaxation(resourceReports, aliveClientIds, disasterJustHappened)
 	if insufficientBudget != nil {
 		return false, "Common pool resources insufficient for executiveBranch broadcastTaxation"
 	}

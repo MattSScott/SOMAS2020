@@ -2,6 +2,7 @@ package iigointernal
 
 import (
 	"fmt"
+	"math/rand"
 	"reflect"
 
 	"github.com/SOMAS2020/SOMAS2020/internal/common/baseclient"
@@ -100,12 +101,17 @@ func (e *executive) getRuleForSpeaker() (shared.PresidentReturnContent, error) {
 }
 
 // broadcastTaxation broadcasts the tax amount decided by the president to all island still in the game.
-func (e *executive) broadcastTaxation(islandsResources map[shared.ClientID]shared.ResourcesReport, aliveIslands []shared.ClientID) error {
+func (e *executive) broadcastTaxation(islandsResources map[shared.ClientID]shared.ResourcesReport, aliveIslands []shared.ClientID, disasterJustHappened bool) error {
 	if !CheckEnoughInCommonPool(e.gameConf.BroadcastTaxationActionCost, e.gameState) {
 		e.gameState.IIGOTaxAmount = make(map[shared.ClientID]shared.Resources)
 		return errors.Errorf("Insufficient Budget in common Pool: broadcastTaxation")
 	}
-	taxMapReturn := e.getTaxMap(islandsResources)
+	if e.gameState.Turn == 1 || disasterJustHappened { // make a new guess after every season, not every turn (also initialise)
+		e.gameState.IIGOPresidentCPGuess = 200 + rand.Float64()*800
+		e.gameState.IIGOPresidentTGuess = uint(2.0 + rand.Float64()*8)
+	}
+
+	taxMapReturn := e.getTaxMap(islandsResources, e.gameState.IIGOPresidentCPGuess, e.gameState.IIGOPresidentTGuess) // use new constant to generate tax - should aim to reach a fixed amount each season
 	if taxMapReturn.ActionTaken && taxMapReturn.ContentType == shared.PresidentTaxation {
 		if !e.incurServiceCharge(e.gameConf.BroadcastTaxationActionCost) {
 			e.gameState.IIGOTaxAmount = make(map[shared.ClientID]shared.Resources)
@@ -244,8 +250,8 @@ func (e *executive) sendSpeakerSalary() error {
 }
 
 // Helper functions:
-func (e *executive) getTaxMap(islandsResources map[shared.ClientID]shared.ResourcesReport) shared.PresidentReturnContent {
-	return e.clientPresident.SetTaxationAmount(islandsResources)
+func (e *executive) getTaxMap(islandsResources map[shared.ClientID]shared.ResourcesReport, presidentCPGuess float64, presidentTGuess uint) shared.PresidentReturnContent {
+	return e.clientPresident.SetTaxationAmount(islandsResources, presidentCPGuess, presidentTGuess)
 }
 
 //requestRuleProposal asks each island alive for its rule proposal.
