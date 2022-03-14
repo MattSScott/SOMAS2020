@@ -33,11 +33,14 @@ var Trading bool = false
 var Forecast bool = false
 var Govt bool = false
 
+var PerVis bool = true
+var CPVis bool = true
+
 func init() {
 
 	var args = os.Args
 
-	if len(args) == 2 || len(args) == 3 { // must have go run . -> num islands -> orgs
+	if len(args) >= 2 { // must have go run . -> num islands -> orgs
 		TotalTeams, _ = strconv.Atoi(args[1])
 	} else { // default conditions take 0 cmd line arguments
 		TotalTeams = 6
@@ -57,6 +60,21 @@ func init() {
 				Forecast = true
 			default:
 			}
+		}
+	}
+
+	if len(args) > 3 {
+		switch args[3] {
+		case "none":
+			PerVis = false
+			CPVis = false
+		case "T":
+			PerVis = true
+			CPVis = false
+		case "CP":
+			PerVis = false
+			CPVis = true
+		default:
 		}
 	}
 
